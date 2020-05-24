@@ -1,0 +1,19 @@
+{
+  "name": "migrations",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "knex": "^0.21.1",
+    "pg": "^8.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  },
+  "scripts": {
+    "start:compose": "npm i && nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

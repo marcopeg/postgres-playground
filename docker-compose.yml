@@ -30,3 +30,20 @@ services:
     restart: always
     links:
       - postgres:db
+
+  migrations:
+    image: node:12.2-alpine
+    volumes:
+      - ${HUMBLE_DATA}/migrations/node_modules:/usr/src/app/node_modules:cached
+      - ./migrations/package.json:/usr/src/app/package.json:cached
+      - ./migrations/package-lock.json:/usr/src/app/package-lock.json:cached
+      - ./migrations/index.js:/usr/src/app/index.js:delegated
+      - ./migrations/knexfile.js:/usr/src/app/knexfile.js:delegated
+      - ./migrations/migrations:/usr/src/app/migrations:delegated
+      - ./migrations/seeds:/usr/src/app/seeds:delegated
+    working_dir: /usr/src/app
+    # user: ${ID_U:-1000}:${ID_G:-1000}
+    # stdin_open: true
+    # tty: true
+    # entrypoint: ["/bin/sh"]
+    entrypoint: [ "npm", "run", "start:compose" ]
