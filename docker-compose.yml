@@ -1,0 +1,32 @@
+version: "3.7"
+
+services:
+  postgres:
+    image: postgres:12.3
+    restart: always
+    volumes:
+      - ${HUMBLE_DATA:-./data}/postgres:/var/lib/postgresql/data:consistent
+      - ${HUMBLE_DATA:-./data}/backup:/backup:consistent
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+
+  adminer:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.postgres-playground-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.postgres-playground-redirect.redirectscheme.permanent=true"
+      - "traefik.http.middlewares.postgres-playground-auth.basicauth.usersfile=/basic-auth/.htpasswd"
+
+      - "traefik.http.routers.postgres-playground.rule=Host(`postgres-playground.${VSCODE_DNS}`)"
+      - "traefik.http.routers.postgres-playground.entrypoints=web"
+      - "traefik.http.routers.postgres-playground.middlewares=postgres-playground-redirect"
+
+      - "traefik.http.routers.postgres-playground-secure.rule=Host(`postgres-playground.${VSCODE_DNS}`)"
+      - "traefik.http.routers.postgres-playground-secure.entrypoints=websecure"
+      - "traefik.http.routers.postgres-playground-secure.tls=true"
+      - "traefik.http.routers.postgres-playground-secure.tls.certresolver=myresolver"
+      - "traefik.http.routers.postgres-playground-secure.middlewares=postgres-playground-auth"
+    image: adminer:4.7
+    restart: always
+    links:
+      - postgres:db
