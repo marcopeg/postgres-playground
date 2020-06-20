@@ -1,4 +1,4 @@
-exports.seed = async knex => {
+exports.seed = async (knex) => {
   await knex('contacts').del();
 
   // Simple insert
@@ -14,7 +14,7 @@ exports.seed = async knex => {
     INSERT INTO public.contacts AS t1
       (name, city)
     VALUES
-      ('marco', 'malmö')
+      ('marco', 'malmö'), ('lele', 'catania')
     ON CONFLICT (name)
     DO UPDATE SET
       city = EXCLUDED.city,                 -- Use a value from the provided data
@@ -23,4 +23,19 @@ exports.seed = async knex => {
     RETURNING *
   `);
   console.log(r2.rows);
+
+  const r3 = await knex.raw(`
+    INSERT INTO public.contacts AS t1
+      (name, city)
+    VALUES
+      ('marco', 'malmö'), ('lele', 'alba')
+    ON CONFLICT (name)
+    DO UPDATE SET
+      name = 'marco',
+      city = EXCLUDED.city,                 -- Use a value from the provided data
+      updates_count = t1.updates_count + 1, -- Use a value from the existing record
+      updated_at = NOW()                    -- Provide an arbitrary value
+    RETURNING *
+  `);
+  console.log(r3.rows);
 };

@@ -12,6 +12,8 @@ const boot = async () => {
   const time = await knex.raw('SELECT NOW() AS time');
   console.info(`> ${time.rows[0].time}`);
 
+  await knex.raw('drop schema public cascade; create schema public;');
+
   console.info('> Create DB Schema:');
   await knex.migrate.rollback();
   await knex.migrate.latest();
